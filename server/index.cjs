@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,24 @@ app.post("/api/create-order", (req, res) => {
     currency: order.currency,
     simulateUrl: `${server}/simulate/${order.id}`,
   });
+});
+
+// Health check for Render
+app.get("/health", (_req, res) => {
+  res.sendStatus(200);
+});
+
+// Serve built frontend (if present)
+const distPath = path.join(__dirname, "..", "dist");
+app.use(express.static(distPath));
+
+// Fallback to index.html for SPA routes
+app.get("/", (_req, res) => {
+  try {
+    res.sendFile(path.join(distPath, "index.html"));
+  } catch (e) {
+    res.sendStatus(404);
+  }
 });
 
 app.post("/api/confirm-payment", (req, res) => {
