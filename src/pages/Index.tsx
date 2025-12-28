@@ -1,13 +1,30 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Helmet } from "react-helmet-async";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import FeaturedProducts from "@/components/FeaturedProducts";
+import CategorySection from "@/components/CategorySection";
+import PromoSection from "@/components/PromoSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <title>AuraStep - Premium Footwear for Modern Living</title>
+        <meta name="description" content="Discover premium shoes designed for comfort, style, and performance. Shop men's, women's, sports, and casual footwear at AuraStep." />
+      </Helmet>
+      
+      <Navbar />
+      <main>
+        <HeroSection />
+        <FeaturedProducts />
+        <CategorySection />
+        <PromoSection />
+        <TestimonialsSection />
+      </main>
+      <Footer />
+    </>
   );
 };
 
