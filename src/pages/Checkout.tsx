@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ type ShippingForm = {
 };
 
 export default function Checkout() {
+  const navigate = useNavigate();
   const { items, totalItems, totalPrice, clearCart } = useCart();
   const shippingCost = totalPrice >= 2499 ? 0 : 99;
   const finalTotal = totalPrice + shippingCost - 500; // example discount
@@ -81,10 +83,33 @@ export default function Checkout() {
 
         const handleMessage = (ev: MessageEvent) => {
           if (ev.data && ev.data.type === "SIMULATED_PAYMENT" && ev.data.status === "paid" && ev.data.orderId === data.id) {
+            // construct order object to persist for tracking
+            const order = {
+              id: data.id || `ASORD-${Date.now()}`,
+              placedAt: new Date().toISOString(),
+              items: items.map((it: any) => ({ product: { id: it.product.id, name: it.product.name, image: it.product.image, price: it.product.price }, quantity: it.quantity, size: it.size, color: it.color })),
+              shipping: shipping,
+              subtotal: totalPrice,
+              shippingCost,
+              discount: 500,
+              trackingId: data.trackingId || `SHIP${Date.now()}`,
+              deliveryPartner: data.deliveryPartner || null,
+              status: "Order Confirmed",
+            };
+
+            // save for tracker page
+            try {
+              localStorage.setItem("lastOrder", JSON.stringify(order));
+            } catch (e) {
+              console.warn("Could not persist order to localStorage", e);
+            }
+
             clearCart();
             window.removeEventListener("message", handleMessage);
             if (popup && !popup.closed) popup.close();
             setStep(2);
+            // navigate to tracking page so user can see order progress
+            navigate("/order-tracking");
           }
         };
 
