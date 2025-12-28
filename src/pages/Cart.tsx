@@ -16,7 +16,7 @@ export default function Cart() {
     return (
       <>
         <Helmet>
-          <title>Shopping Cart | AuraStep</title>
+          <title>{'Shopping Cart | AuraStep'}</title>
         </Helmet>
 
         <Navbar />
@@ -49,7 +49,7 @@ export default function Cart() {
   return (
     <>
       <Helmet>
-        <title>Shopping Cart ({totalItems} items) | AuraStep</title>
+        <title>{`Shopping Cart (${totalItems} items) | AuraStep`}</title>
       </Helmet>
 
       <Navbar />
@@ -180,10 +180,12 @@ export default function Cart() {
                   </div>
                 </div>
 
-                <Button variant="heroAccent" size="xl" className="w-full mt-6 gap-2">
-                  Proceed to Checkout
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
+                <Link to="/checkout">
+                  <Button variant="heroAccent" size="xl" className="w-full mt-6 gap-2">
+                    Proceed to Checkout
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
 
                 <p className="text-xs text-center text-muted-foreground mt-4">
                   Secure checkout powered by Razorpay
