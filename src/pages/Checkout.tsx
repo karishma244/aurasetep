@@ -26,6 +26,7 @@ export default function Checkout() {
 
   const [step, setStep] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
 
   const [shipping, setShipping] = useState<ShippingForm>({
     fullName: "",
@@ -67,6 +68,7 @@ export default function Checkout() {
 
   const handlePay = async () => {
     setLoading(true);
+    setPayError(null);
     try {
       const server = (import.meta as any).env.VITE_PAYMENT_SERVER_URL || "http://localhost:4242";
       const res = await fetch(`${server}/api/create-order`, {
@@ -119,7 +121,11 @@ export default function Checkout() {
       }
     } catch (err) {
       console.error(err);
-      alert("Payment initialization failed. Check console for details.");
+      // show a helpful message to the user with next steps
+      const message = (err as any)?.message || String(err);
+      setPayError(
+        `Payment initialization failed: ${message}.\nMake sure the payment simulator is running (run \`npm run dev:server\` from the project root) and try again.`
+      );
     } finally {
       setLoading(false);
     }
@@ -265,6 +271,15 @@ export default function Checkout() {
                         <Button variant="outline" onClick={() => setStep(0)}>← Edit Shipping</Button>
                         <Button variant="heroAccent" onClick={handlePay} disabled={loading}>{loading ? 'Processing...' : 'Pay Securely'}</Button>
                       </div>
+                      {payError && (
+                        <div className="mt-4 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-800">
+                          <div className="whitespace-pre-wrap">{payError}</div>
+                          <div className="mt-3 flex gap-2">
+                            <Button variant="outline" onClick={handlePay} disabled={loading}>Retry Payment</Button>
+                            <Button variant="ghost" onClick={() => window.open('https://github.com', '_blank')}>Open Docs</Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
