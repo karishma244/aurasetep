@@ -46,10 +46,18 @@ const distPath = path.join(__dirname, "..", "dist");
 app.use(express.static(distPath));
 
 // Fallback to index.html for SPA routes
-app.get("/", (_req, res) => {
+// SPA fallback for any non-API route
+app.get("*", (_req, res) => {
+  const indexFile = path.join(distPath, "index.html");
   try {
-    res.sendFile(path.join(distPath, "index.html"));
+    // debug log so Render shows whether dist/index.html exists
+    // this helps diagnose 503 during deploy
+    // eslint-disable-next-line no-console
+    console.log("Serving SPA from:", indexFile);
+    res.sendFile(indexFile);
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("Error serving index.html", e && e.message ? e.message : e);
     res.sendStatus(404);
   }
 });
